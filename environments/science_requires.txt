@@ -16,7 +16,7 @@ transformers_stream_generator
 einops
 accelerate
 tiktoken
-opencc==1.1.6
+opencc==1.1.9
 imagededup
 dlib
 spacy-pkuseg==0.0.32
