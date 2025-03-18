@@ -1,20 +1,18 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>data_juicer.config.config &mdash; data_juicer 0.2.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+  <title>data_juicer.config.config &mdash; data_juicer 1.2.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=b1f64a84"></script>
-        <script src="../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=fd7cadf9"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -31,9 +29,6 @@
           <a href="../../../index.html" class="icon icon-home">
             data_juicer
           </a>
-              <div class="version">
-                0.2.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -82,31 +77,34 @@
            <div itemprop="articleBody">
              
   <h1>Source code for data_juicer.config.config</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentError</span><span class="p">,</span> <span class="n">Namespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">argparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArgumentError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">from</span> <span class="nn">jsonargparse</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ActionConfigFile</span><span class="p">,</span> <span class="n">ArgumentParser</span><span class="p">,</span> <span class="n">dict_to_namespace</span><span class="p">,</span>
-                          <span class="n">namespace_to_dict</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">jsonargparse.typehints</span> <span class="kn">import</span> <span class="n">ActionTypeHint</span>
-<span class="kn">from</span> <span class="nn">jsonargparse.typing</span> <span class="kn">import</span> <span class="n">ClosedUnitInterval</span><span class="p">,</span> <span class="n">NonNegativeInt</span><span class="p">,</span> <span class="n">PositiveInt</span>
-<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jsonargparse</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">ActionConfigFile</span><span class="p">,</span> <span class="n">ArgumentParser</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">,</span>
+                          <span class="n">dict_to_namespace</span><span class="p">,</span> <span class="n">namespace_to_dict</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jsonargparse._typehints</span><span class="w"> </span><span class="kn">import</span> <span class="n">ActionTypeHint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jsonargparse.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClosedUnitInterval</span><span class="p">,</span> <span class="n">NonNegativeInt</span><span class="p">,</span> <span class="n">PositiveInt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
 
-<span class="kn">from</span> <span class="nn">data_juicer.ops.base_op</span> <span class="kn">import</span> <span class="n">OPERATORS</span>
-<span class="kn">from</span> <span class="nn">data_juicer.utils.logger_utils</span> <span class="kn">import</span> <span class="n">setup_logger</span>
-<span class="kn">from</span> <span class="nn">data_juicer.utils.mm_utils</span> <span class="kn">import</span> <span class="n">SpecialTokens</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.ops.base_op</span><span class="w"> </span><span class="kn">import</span> <span class="n">OPERATORS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.ops.op_fusion</span><span class="w"> </span><span class="kn">import</span> <span class="n">FUSION_STRATEGIES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.utils.logger_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.utils.mm_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpecialTokens</span>
 
 <span class="n">global_cfg</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">global_parser</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="init_configs"><a class="viewcode-back" href="../../../data_juicer.config.html#data_juicer.config.init_configs">[docs]</a><span class="k">def</span> <span class="nf">init_configs</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="init_configs">
+<a class="viewcode-back" href="../../../data_juicer.config.html#data_juicer.config.init_configs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">init_configs</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">which_entry</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    initialize the jsonargparse parser and parse configs from one of:</span>
 <span class="sd">        1. POSIX-style commands line args;</span>
@@ -114,15 +112,30 @@
 <span class="sd">        3. environment variables</span>
 <span class="sd">        4. hard-coded defaults</span>
 
-<span class="sd">    :param args: list of params, e.g., [&#39;--conifg&#39;, &#39;cfg.yaml&#39;], defaut None.</span>
+<span class="sd">    :param args: list of params, e.g., [&#39;--config&#39;, &#39;cfg.yaml&#39;], default None.</span>
+<span class="sd">    :param which_entry: which entry to init configs (executor/analyzer)</span>
 <span class="sd">    :return: a global cfg object used by the Executor or Analyzer</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">(</span><span class="n">default_env</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default_config_files</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--config&#39;</span><span class="p">,</span>
-                        <span class="n">action</span><span class="o">=</span><span class="n">ActionConfigFile</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Path to a dj basic configuration file.&#39;</span><span class="p">,</span>
-                        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># required but mutually exclusive args group</span>
+    <span class="n">required_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">required_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--config&#39;</span><span class="p">,</span>
+                                <span class="n">action</span><span class="o">=</span><span class="n">ActionConfigFile</span><span class="p">,</span>
+                                <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Path to a dj basic configuration file.&#39;</span><span class="p">)</span>
+    <span class="n">required_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--auto&#39;</span><span class="p">,</span>
+                                <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                                <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Weather to use an auto analyzing &#39;</span>
+                                <span class="s1">&#39;strategy instead of a specific data &#39;</span>
+                                <span class="s1">&#39;recipe. If a specific config file is &#39;</span>
+                                <span class="s1">&#39;given by --config arg, this arg is &#39;</span>
+                                <span class="s1">&#39;disabled. Only available for Analyzer.&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--auto_num&#39;</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="n">PositiveInt</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The number of samples to be analyzed &#39;</span>
+                        <span class="s1">&#39;automatically. It</span><span class="se">\&#39;</span><span class="s1">s 1000 in default.&#39;</span><span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--hpo_config&#39;</span><span class="p">,</span>
@@ -171,9 +184,16 @@
         <span class="s1">&#39;default. Accepted format:&lt;w1&gt; dataset1-path &lt;w2&gt; dataset2-path &#39;</span>
         <span class="s1">&#39;&lt;w3&gt; dataset3-path ...&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--generated_dataset_config&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">Dict</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Configuration used to create a dataset. &#39;</span>
+        <span class="s1">&#39;The dataset will be created from this configuration if provided. &#39;</span>
+        <span class="s1">&#39;It must contain the `type` field to specify the dataset name.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--export_path&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;./outputs/hello_world.jsonl&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;./outputs/hello_world/hello_world.jsonl&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Path to export and save the output processed dataset. The &#39;</span>
         <span class="s1">&#39;directory to store the processed dataset will be the work &#39;</span>
         <span class="s1">&#39;directory of this process.&#39;</span><span class="p">)</span>
@@ -271,11 +291,22 @@
         <span class="s1">&#39;own special token according to your input dataset.&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--suffixes&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
         <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Suffixes of files that will be find and loaded. If not set, we &#39;</span>
         <span class="s1">&#39;will find all suffix files, and select a suitable formatter &#39;</span>
         <span class="s1">&#39;with the most files as default.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--turbo&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Enable Turbo mode to maximize processing speed when batch size &#39;</span>
+        <span class="s1">&#39;is 1.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--skip_op_error&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Skip errors in OPs caused by unexpected invalid samples.&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--use_cache&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
@@ -300,6 +331,12 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The compression method of the cache file, which can be&#39;</span>
         <span class="s1">&#39;specified in [&quot;gzip&quot;, &quot;zstd&quot;, &quot;lz4&quot;]. If this parameter is&#39;</span>
         <span class="s1">&#39;None, the cache file will not be compressed.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--open_monitor&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Whether to open the monitor to trace resource utilization for &#39;</span>
+        <span class="s1">&#39;each OP during data processing. It</span><span class="se">\&#39;</span><span class="s1">s True in default.&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--use_checkpoint&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
@@ -340,12 +377,44 @@
         <span class="s1">&#39;difference before and after a op. Only available when &#39;</span>
         <span class="s1">&#39;open_tracer is true.&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--open_insight_mining&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Whether to open insight mining to trace the OP-wise stats/tags &#39;</span>
+        <span class="s1">&#39;changes during process. It might take more time when opening &#39;</span>
+        <span class="s1">&#39;insight mining.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--op_list_to_mine&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Which OPs will be applied on the dataset to mine the insights &#39;</span>
+        <span class="s1">&#39;in their stats changes. Only those OPs that produce stats or &#39;</span>
+        <span class="s1">&#39;meta are valid. If it</span><span class="se">\&#39;</span><span class="s1">s empty, all OPs that produce stats and &#39;</span>
+        <span class="s1">&#39;meta will be involved. Only available when filter_list_to_mine &#39;</span>
+        <span class="s1">&#39;is true.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--op_fusion&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Whether to fuse operators that share the same intermediate &#39;</span>
         <span class="s1">&#39;variables automatically. Op fusion might reduce the memory &#39;</span>
         <span class="s1">&#39;requirements slightly but speed up the whole process.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--fusion_strategy&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;probe&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;OP fusion strategy. Support [&quot;greedy&quot;, &quot;probe&quot;] now. &quot;greedy&quot; &#39;</span>
+        <span class="s1">&#39;means keep the basic OP order and put the fused OP to the last &#39;</span>
+        <span class="s1">&#39;of each fused OP group. &quot;probe&quot; means Data-Juicer will probe &#39;</span>
+        <span class="s1">&#39;the running speed for each OP at the beginning and reorder the &#39;</span>
+        <span class="s1">&#39;OPs and fused OPs according to their probed speed (fast to &#39;</span>
+        <span class="s1">&#39;slow). It</span><span class="se">\&#39;</span><span class="s1">s &quot;probe&quot; in default.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--adaptive_batch_size&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Whether to use adaptive batch sizes for each OP according to &#39;</span>
+        <span class="s1">&#39;the probed results. It</span><span class="se">\&#39;</span><span class="s1">s False in default.&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--process&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span>
@@ -387,6 +456,14 @@
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">cfg</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="c1"># check the entry</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.core.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Analyzer</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">which_entry</span><span class="p">,</span> <span class="n">Analyzer</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cfg</span><span class="o">.</span><span class="n">auto</span><span class="p">:</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;--auto argument can only be used for analyzer!&#39;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+
         <span class="n">cfg</span> <span class="o">=</span> <span class="n">init_setup_from_cfg</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
         <span class="n">cfg</span> <span class="o">=</span> <span class="n">update_op_process</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
 
@@ -408,10 +485,11 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Config initialization failed&#39;</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">update_ds_cache_dir_and_related_vars</span><span class="p">(</span><span class="n">new_ds_cache_path</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-    <span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_ds_cache_dir_and_related_vars</span><span class="p">(</span><span class="n">new_ds_cache_path</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
 
     <span class="c1"># update the HF_DATASETS_CACHE</span>
     <span class="n">config</span><span class="o">.</span><span class="n">HF_DATASETS_CACHE</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">new_ds_cache_path</span><span class="p">)</span>
@@ -428,7 +506,7 @@
         <span class="n">config</span><span class="o">.</span><span class="n">DEFAULT_EXTRACTED_DATASETS_PATH</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">init_setup_from_cfg</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">init_setup_from_cfg</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Do some extra setup tasks after parsing config file or command line.</span>
 
@@ -455,7 +533,7 @@
                  <span class="n">redirect</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">executor_type</span> <span class="o">==</span> <span class="s1">&#39;default&#39;</span><span class="p">)</span>
 
     <span class="c1"># check and get dataset dir</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataset_path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataset_path&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataset_path</span><span class="p">):</span>
         <span class="n">cfg</span><span class="o">.</span><span class="n">dataset_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataset_path</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">dataset_path</span><span class="p">):</span>
             <span class="n">cfg</span><span class="o">.</span><span class="n">dataset_dir</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">dataset_path</span>
@@ -473,6 +551,11 @@
 
     <span class="c1"># check number of processes np</span>
     <span class="n">sys_cpu_count</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">np</span><span class="p">:</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">np</span> <span class="o">=</span> <span class="n">sys_cpu_count</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Number of processes `np` is not set, &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;set it to cpu count [</span><span class="si">{</span><span class="n">sys_cpu_count</span><span class="si">}</span><span class="s1">] as default value.&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">np</span> <span class="o">&gt;</span> <span class="n">sys_cpu_count</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of processes `np` is set as [</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">np</span><span class="si">}</span><span class="s1">], which &#39;</span>
                        <span class="sa">f</span><span class="s1">&#39;is larger than the cpu count [</span><span class="si">{</span><span class="n">sys_cpu_count</span><span class="si">}</span><span class="s1">]. Due &#39;</span>
@@ -487,7 +570,7 @@
     <span class="c1"># cache management.</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">use_cache</span> <span class="ow">or</span> <span class="n">cfg</span><span class="o">.</span><span class="n">use_checkpoint</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Cache management of datasets is disabled.&#39;</span><span class="p">)</span>
-        <span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">disable_caching</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">disable_caching</span>
         <span class="n">disable_caching</span><span class="p">()</span>
         <span class="n">cfg</span><span class="o">.</span><span class="n">use_cache</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -499,7 +582,7 @@
         <span class="c1"># when disabling cache, enable the temp_dir argument</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Set temp directory to store temp files to &#39;</span>
                        <span class="sa">f</span><span class="s1">&#39;[</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">temp_dir</span><span class="si">}</span><span class="s1">].&#39;</span><span class="p">)</span>
-        <span class="kn">import</span> <span class="nn">tempfile</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
         <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">temp_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">temp_dir</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">temp_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">tempfile</span><span class="o">.</span><span class="n">tempdir</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">temp_dir</span>
@@ -507,9 +590,14 @@
     <span class="c1"># The checkpoint mode is not compatible with op fusion for now.</span>
     <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">op_fusion</span><span class="p">:</span>
         <span class="n">cfg</span><span class="o">.</span><span class="n">use_checkpoint</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">fusion_strategy</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">fusion_strategy</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">fusion_strategy</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">FUSION_STRATEGIES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Unsupported OP fusion strategy [</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">fusion_strategy</span><span class="si">}</span><span class="s1">]. &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Should be one of </span><span class="si">{</span><span class="n">FUSION_STRATEGIES</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
 
     <span class="c1"># update huggingface datasets cache directory only when ds_cache_dir is set</span>
-    <span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">config</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
     <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">ds_cache_dir</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Set dataset cache directory to </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">ds_cache_dir</span><span class="si">}</span><span class="s1"> &#39;</span>
                        <span class="sa">f</span><span class="s1">&#39;using the ds_cache_dir argument, which is &#39;</span>
@@ -531,6 +619,10 @@
     <span class="n">SpecialTokens</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">image_special_token</span>
     <span class="n">SpecialTokens</span><span class="o">.</span><span class="n">eoc</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">eoc_special_token</span>
 
+    <span class="c1"># add all filters that produce stats</span>
+    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">auto</span><span class="p">:</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="n">load_ops_with_stats_meta</span><span class="p">()</span>
+
     <span class="c1"># Apply text_key modification during initializing configs</span>
     <span class="c1"># users can freely specify text_key for different ops using `text_key`</span>
     <span class="c1"># otherwise, set arg text_key of each op to text_keys</span>
@@ -538,31 +630,53 @@
         <span class="n">text_key</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">text_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">text_key</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">text_keys</span>
-    <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">process</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">op_name</span> <span class="ow">in</span> <span class="n">op</span><span class="p">:</span>
-            <span class="n">args</span> <span class="o">=</span> <span class="n">op</span><span class="p">[</span><span class="n">op_name</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s1">&#39;text_key&#39;</span><span class="p">:</span> <span class="n">text_key</span><span class="p">,</span>
-                    <span class="s1">&#39;image_key&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">image_key</span><span class="p">,</span>
-                    <span class="s1">&#39;audio_key&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">audio_key</span><span class="p">,</span>
-                    <span class="s1">&#39;video_key&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">video_key</span><span class="p">,</span>
-                <span class="p">}</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s1">&#39;text_key&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">or</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;text_key&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">args</span><span class="p">[</span><span class="s1">&#39;text_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">text_key</span>
-                <span class="k">if</span> <span class="s1">&#39;image_key&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">or</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;image_key&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">args</span><span class="p">[</span><span class="s1">&#39;image_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">image_key</span>
-                <span class="k">if</span> <span class="s1">&#39;audio_key&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">or</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;audio_key&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">args</span><span class="p">[</span><span class="s1">&#39;audio_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">audio_key</span>
-                <span class="k">if</span> <span class="s1">&#39;video_key&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">or</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;video_key&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">args</span><span class="p">[</span><span class="s1">&#39;video_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">video_key</span>
-            <span class="n">op</span><span class="p">[</span><span class="n">op_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="n">op_attrs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;text_key&#39;</span><span class="p">:</span> <span class="n">text_key</span><span class="p">,</span>
+        <span class="s1">&#39;image_key&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">image_key</span><span class="p">,</span>
+        <span class="s1">&#39;audio_key&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">audio_key</span><span class="p">,</span>
+        <span class="s1">&#39;video_key&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">video_key</span><span class="p">,</span>
+        <span class="s1">&#39;num_proc&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">np</span><span class="p">,</span>
+        <span class="s1">&#39;turbo&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">turbo</span><span class="p">,</span>
+        <span class="s1">&#39;skip_op_error&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">skip_op_error</span><span class="p">,</span>
+        <span class="s1">&#39;work_dir&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">work_dir</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="n">update_op_attr</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">process</span><span class="p">,</span> <span class="n">op_attrs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">cfg</span>
 
 
-<span class="k">def</span> <span class="nf">_collect_config_info_from_class_docs</span><span class="p">(</span><span class="n">configurable_ops</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_ops_with_stats_meta</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pkgutil</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">data_juicer.ops.filter</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">djfilter</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">NON_STATS_FILTERS</span><span class="p">,</span> <span class="n">TAGGING_OPS</span>
+    <span class="n">stats_filters</span> <span class="o">=</span> <span class="p">[{</span>
+        <span class="n">filter_name</span><span class="p">:</span> <span class="p">{}</span>
+    <span class="p">}</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">filter_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">iter_modules</span><span class="p">(</span><span class="n">djfilter</span><span class="o">.</span><span class="n">__path__</span><span class="p">)</span>
+                     <span class="k">if</span> <span class="n">filter_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NON_STATS_FILTERS</span><span class="o">.</span><span class="n">modules</span><span class="p">]</span>
+    <span class="n">meta_ops</span> <span class="o">=</span> <span class="p">[{</span><span class="n">op_name</span><span class="p">:</span> <span class="p">{}}</span> <span class="k">for</span> <span class="n">op_name</span> <span class="ow">in</span> <span class="n">TAGGING_OPS</span><span class="o">.</span><span class="n">modules</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">stats_filters</span> <span class="o">+</span> <span class="n">meta_ops</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">update_op_attr</span><span class="p">(</span><span class="n">op_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">attr_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">attr_dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">op_list</span>
+    <span class="n">updated_op_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">op_list</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">op_name</span> <span class="ow">in</span> <span class="n">op</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">op</span><span class="p">[</span><span class="n">op_name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">attr_dict</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">attr_dict</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">or</span> <span class="n">args</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">args</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">op</span><span class="p">[</span><span class="n">op_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="n">updated_op_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">updated_op_list</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_collect_config_info_from_class_docs</span><span class="p">(</span><span class="n">configurable_ops</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add ops and its params to parser for command line.</span>
 
@@ -584,7 +698,7 @@
     <span class="k">return</span> <span class="n">op_params</span>
 
 
-<span class="k">def</span> <span class="nf">sort_op_by_types_and_names</span><span class="p">(</span><span class="n">op_name_classes</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sort_op_by_types_and_names</span><span class="p">(</span><span class="n">op_name_classes</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Split ops items by op type and sort them to sub-ops by name, then concat</span>
 <span class="sd">    together.</span>
@@ -602,12 +716,17 @@
                         <span class="k">if</span> <span class="s1">&#39;deduplicator&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">]</span>
     <span class="n">selector_ops</span> <span class="o">=</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="ow">in</span> <span class="n">op_name_classes</span>
                     <span class="k">if</span> <span class="s1">&#39;selector&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">]</span>
+    <span class="n">grouper_ops</span> <span class="o">=</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="ow">in</span> <span class="n">op_name_classes</span>
+                   <span class="k">if</span> <span class="s1">&#39;grouper&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">]</span>
+    <span class="n">aggregator_ops</span> <span class="o">=</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="ow">in</span> <span class="n">op_name_classes</span>
+                      <span class="k">if</span> <span class="s1">&#39;aggregator&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">]</span>
     <span class="n">ops_sorted_by_types</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">mapper_ops</span><span class="p">)</span> <span class="o">+</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">filter_ops</span><span class="p">)</span> <span class="o">+</span> <span class="nb">sorted</span><span class="p">(</span>
-        <span class="n">deduplicator_ops</span><span class="p">)</span> <span class="o">+</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">selector_ops</span><span class="p">)</span>
+        <span class="n">deduplicator_ops</span><span class="p">)</span> <span class="o">+</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">selector_ops</span><span class="p">)</span> <span class="o">+</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">grouper_ops</span><span class="p">)</span> <span class="o">+</span> \
+        <span class="nb">sorted</span><span class="p">(</span><span class="n">aggregator_ops</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ops_sorted_by_types</span>
 
 
-<span class="k">def</span> <span class="nf">update_op_process</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_op_process</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
     <span class="n">op_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">OPERATORS</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="n">args</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;--&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">args</span>
@@ -651,14 +770,12 @@
 
         <span class="c1"># update op params of cfg.process</span>
         <span class="n">internal_op_para</span> <span class="o">=</span> <span class="n">temp_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">op_in_process_name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">internal_op_para</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">num_proc</span> <span class="o">=</span> <span class="n">internal_op_para</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_proc&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="s1">&#39;num_proc&#39;</span> <span class="ow">in</span> <span class="n">internal_op_para</span><span class="p">:</span>
-                <span class="n">internal_op_para</span><span class="p">[</span><span class="s1">&#39;num_proc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_proc</span> <span class="ow">or</span> <span class="n">cfg</span><span class="o">.</span><span class="n">np</span>
-            <span class="n">internal_op_para</span> <span class="o">=</span> <span class="n">namespace_to_dict</span><span class="p">(</span><span class="n">internal_op_para</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">internal_op_para</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">cfg</span><span class="o">.</span><span class="n">process</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">op_in_process_name</span><span class="p">:</span> <span class="n">internal_op_para</span><span class="p">}</span>
+
+        <span class="n">cfg</span><span class="o">.</span><span class="n">process</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">op_in_process_name</span><span class="p">:</span>
+            <span class="kc">None</span> <span class="k">if</span> <span class="n">internal_op_para</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span>
+            <span class="n">namespace_to_dict</span><span class="p">(</span><span class="n">internal_op_para</span><span class="p">)</span>
+        <span class="p">}</span>
 
     <span class="c1"># check the op params via type hint</span>
     <span class="n">temp_parser</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
@@ -670,12 +787,15 @@
     <span class="n">temp_args</span> <span class="o">=</span> <span class="n">namespace_to_arg_list</span><span class="p">(</span><span class="n">temp_cfg</span><span class="p">,</span>
                                       <span class="n">includes</span><span class="o">=</span><span class="n">recognized_args</span><span class="p">,</span>
                                       <span class="n">excludes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">])</span>
-    <span class="n">temp_args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;--config&#39;</span><span class="p">,</span> <span class="n">temp_cfg</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">absolute</span><span class="p">]</span> <span class="o">+</span> <span class="n">temp_args</span>
+    <span class="k">if</span> <span class="n">temp_cfg</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
+        <span class="n">temp_args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;--config&#39;</span><span class="p">,</span> <span class="n">temp_cfg</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">absolute</span><span class="p">]</span> <span class="o">+</span> <span class="n">temp_args</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">temp_args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;--auto&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">temp_args</span>
     <span class="n">temp_parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">temp_args</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cfg</span>
 
 
-<span class="k">def</span> <span class="nf">namespace_to_arg_list</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">namespace_to_arg_list</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">includes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">arg_list</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">namespace</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -695,7 +815,9 @@
     <span class="k">return</span> <span class="n">arg_list</span>
 
 
-<span class="k">def</span> <span class="nf">config_backup</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">config_backup</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cfg</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
+        <span class="k">return</span>
     <span class="n">cfg_path</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">absolute</span>
     <span class="n">work_dir</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">work_dir</span>
     <span class="n">target_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">cfg_path</span><span class="p">))</span>
@@ -705,10 +827,10 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">cfg_path</span><span class="p">,</span> <span class="n">target_path</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">display_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">pprint</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">display_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pprint</span>
 
-    <span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tabulate</span><span class="w"> </span><span class="kn">import</span> <span class="n">tabulate</span>
     <span class="n">table_header</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;values&#39;</span><span class="p">]</span>
 
     <span class="c1"># remove ops outside the process list for better displaying</span>
@@ -725,13 +847,15 @@
     <span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="export_config"><a class="viewcode-back" href="../../../data_juicer.config.html#data_juicer.config.export_config">[docs]</a><span class="k">def</span> <span class="nf">export_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span>
-                  <span class="n">path</span><span class="p">,</span>
-                  <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;yaml&#39;</span><span class="p">,</span>
-                  <span class="n">skip_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                  <span class="n">skip_check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                  <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                  <span class="n">multifile</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="export_config">
+<a class="viewcode-back" href="../../../data_juicer.config.html#data_juicer.config.export_config">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">export_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span>
+                  <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                  <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;yaml&#39;</span><span class="p">,</span>
+                  <span class="n">skip_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                  <span class="n">skip_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                  <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                  <span class="n">multifile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save the config object, some params are from jsonargparse</span>
 
@@ -767,7 +891,10 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Saved the configuration in </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="merge_config"><a class="viewcode-back" href="../../../data_juicer.config.html#data_juicer.config.merge_config">[docs]</a><span class="k">def</span> <span class="nf">merge_config</span><span class="p">(</span><span class="n">ori_cfg</span><span class="p">,</span> <span class="n">new_cfg</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+
+<div class="viewcode-block" id="merge_config">
+<a class="viewcode-back" href="../../../data_juicer.config.html#data_juicer.config.merge_config">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">merge_config</span><span class="p">(</span><span class="n">ori_cfg</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">new_cfg</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Merge configuration from new_cfg into ori_cfg</span>
 
@@ -825,7 +952,10 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Config merge failed&#39;</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">prepare_side_configs</span><span class="p">(</span><span class="n">ori_config</span><span class="p">):</span>
+
+<div class="viewcode-block" id="prepare_side_configs">
+<a class="viewcode-back" href="../../../data_juicer.config.html#data_juicer.config.prepare_side_configs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_side_configs</span><span class="p">(</span><span class="n">ori_config</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    parse the config if ori_config is a string of a config file path with</span>
 <span class="sd">        yaml, yml or json format</span>
@@ -854,12 +984,15 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;Unrecognized side config type: [</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ori_config</span><span class="p">)</span><span class="si">}</span><span class="s1">].&#39;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">config</span>
+    <span class="k">return</span> <span class="n">config</span></div>
 
 
-<span class="k">def</span> <span class="nf">get_init_configs</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_init_configs">
+<a class="viewcode-back" href="../../../data_juicer.config.html#data_juicer.config.get_init_configs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_init_configs</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    set init configs of datajucer for cfg</span>
+<span class="sd">    set init configs of data-juicer for cfg</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">()</span>
     <span class="n">temp_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="s1">&#39;job_dj_config.json&#39;</span><span class="p">)</span>
@@ -869,7 +1002,8 @@
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">temp_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
     <span class="n">inited_dj_cfg</span> <span class="o">=</span> <span class="n">init_configs</span><span class="p">([</span><span class="s1">&#39;--config&#39;</span><span class="p">,</span> <span class="n">temp_file</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">inited_dj_cfg</span>
+    <span class="k">return</span> <span class="n">inited_dj_cfg</span></div>
+
 </pre></div>
 
            </div>

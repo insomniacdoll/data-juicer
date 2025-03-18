@@ -1,20 +1,18 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>data_juicer.ops.mapper.nlpaug_en_mapper &mdash; data_juicer 0.2.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+  <title>data_juicer.ops.mapper.nlpaug_en_mapper &mdash; data_juicer 1.2.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=b1f64a84"></script>
-        <script src="../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../../_static/documentation_options.js?v=fd7cadf9"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -31,9 +29,6 @@
           <a href="../../../../index.html" class="icon icon-home">
             data_juicer
           </a>
-              <div class="version">
-                0.2.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -82,32 +77,36 @@
            <div itemprop="articleBody">
              
   <h1>Source code for data_juicer.ops.mapper.nlpaug_en_mapper</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 
-<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">PositiveInt</span>
 
-<span class="kn">from</span> <span class="nn">data_juicer.utils.availability_utils</span> <span class="kn">import</span> <span class="n">AvailabilityChecking</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.utils.lazy_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">LazyLoader</span>
 
-<span class="kn">from</span> <span class="nn">..base_op</span> <span class="kn">import</span> <span class="n">OPERATORS</span><span class="p">,</span> <span class="n">Mapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..base_op</span><span class="w"> </span><span class="kn">import</span> <span class="n">OPERATORS</span><span class="p">,</span> <span class="n">Mapper</span>
+
+<span class="n">nlpaug</span> <span class="o">=</span> <span class="n">LazyLoader</span><span class="p">(</span><span class="s1">&#39;nlpaug&#39;</span><span class="p">,</span> <span class="s1">&#39;nlpaug&#39;</span><span class="p">)</span>
+<span class="n">nac</span> <span class="o">=</span> <span class="n">LazyLoader</span><span class="p">(</span><span class="s1">&#39;nac&#39;</span><span class="p">,</span> <span class="s1">&#39;nlpaug.augmenter.char&#39;</span><span class="p">)</span>
+<span class="n">naw</span> <span class="o">=</span> <span class="n">LazyLoader</span><span class="p">(</span><span class="s1">&#39;naw&#39;</span><span class="p">,</span> <span class="s1">&#39;nlpaug.augmenter.word&#39;</span><span class="p">)</span>
+<span class="n">naf</span> <span class="o">=</span> <span class="n">LazyLoader</span><span class="p">(</span><span class="s1">&#39;naf&#39;</span><span class="p">,</span> <span class="s1">&#39;nlpaug.flow&#39;</span><span class="p">)</span>
 
 <span class="n">OP_NAME</span> <span class="o">=</span> <span class="s1">&#39;nlpaug_en_mapper&#39;</span>
 
-<span class="k">with</span> <span class="n">AvailabilityChecking</span><span class="p">([</span><span class="s1">&#39;nlpaug&#39;</span><span class="p">],</span> <span class="n">OP_NAME</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">nlpaug.augmenter.char</span> <span class="k">as</span> <span class="nn">nac</span>
-    <span class="kn">import</span> <span class="nn">nlpaug.augmenter.word</span> <span class="k">as</span> <span class="nn">naw</span>
-    <span class="kn">import</span> <span class="nn">nlpaug.flow</span> <span class="k">as</span> <span class="nn">naf</span>
-    <span class="kn">from</span> <span class="nn">nlpaug.util</span> <span class="kn">import</span> <span class="n">Action</span>
 
-
-<div class="viewcode-block" id="NlpaugEnMapper"><a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.NlpaugEnMapper">[docs]</a><span class="nd">@OPERATORS</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span><span class="n">OP_NAME</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">NlpaugEnMapper</span><span class="p">(</span><span class="n">Mapper</span><span class="p">):</span>
+<div class="viewcode-block" id="NlpaugEnMapper">
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.NlpaugEnMapper">[docs]</a>
+<span class="nd">@OPERATORS</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span><span class="n">OP_NAME</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NlpaugEnMapper</span><span class="p">(</span><span class="n">Mapper</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mapper to simply augment samples in English based on nlpaug library.&quot;&quot;&quot;</span>
 
     <span class="n">_batched_op</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="NlpaugEnMapper.__init__"><a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.NlpaugEnMapper.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="NlpaugEnMapper.__init__">
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.NlpaugEnMapper.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">sequential</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                 <span class="n">aug_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                 <span class="n">aug_num</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
                  <span class="n">keep_original_sample</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                  <span class="n">delete_random_word</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                  <span class="n">swap_random_word</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -181,6 +180,7 @@
 
         <span class="n">aug_pipeline</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># word level</span>
+        <span class="n">Action</span> <span class="o">=</span> <span class="n">nlpaug</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">Action</span>
         <span class="k">if</span> <span class="n">delete_random_word</span><span class="p">:</span>
             <span class="n">aug_pipeline</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">naw</span><span class="o">.</span><span class="n">RandomWordAug</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="n">Action</span><span class="o">.</span><span class="n">DELETE</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">swap_random_word</span><span class="p">:</span>
@@ -207,7 +207,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">aug</span> <span class="o">=</span> <span class="n">aug_pipeline</span></div>
 
-<div class="viewcode-block" id="NlpaugEnMapper.process"><a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.NlpaugEnMapper.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NlpaugEnMapper.process_batched">
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.NlpaugEnMapper.process_batched">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_batched</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">):</span>
         <span class="c1"># no augmentation methods are opened</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aug</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_original_sample</span><span class="p">:</span>
@@ -237,7 +240,9 @@
             <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_key</span><span class="p">:</span>
                 <span class="n">res_samples</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">res_samples</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">*</span> \
                                    <span class="nb">len</span><span class="p">(</span><span class="n">res_samples</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">text_key</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">res_samples</span></div></div>
+        <span class="k">return</span> <span class="n">res_samples</span></div>
+</div>
+
 </pre></div>
 
            </div>
